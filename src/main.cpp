@@ -6,6 +6,7 @@
 #include <entt/entt.hpp>
 #include <memory>
 #include <vector>
+#include <thread>
 
 #pragma region ENGINE_INCLUDES
 #include <SuperCoco/Core.hpp>
@@ -37,6 +38,11 @@
 #include <SuperCoco/CollisionShape.hpp>
 #pragma endregion
 #pragma region GAME
+#include <PigeonFeeder/Game.hpp>
+#include <PigeonFeeder/DeathSystem.hpp>
+#include <PigeonFeeder/Pigeon.hpp>
+#include <PigeonFeeder/PigeonFood.hpp>
+#include <PigeonFeeder/IdleState.hpp>
 
 #pragma endregion
 
@@ -83,10 +89,19 @@ int main(int argc, char* argv[])
 #endif
 #pragma endregion
 
+	PigeonFeeder::Game game;
+	PigeonFeeder::DeathSystem deathSystem(&world);
+
+	inputmgr.BindKeyPressed(SDLK_ESCAPE, "Close");
+	inputmgr.BindMouseButtonPressed(Sce::MouseButton::LEFT_CLICK, "SpawnFood");
 
 	#pragma region ENTITIES
 	//Creating camera
-	entt::handle camera = core.CreateCamera(world, { -1080.f / 2.f, -769.f / 2.f }, {1.f, 1.f});
+	entt::handle camera = core.CreateCamera(world, { 0.f, 0.f }, {1.f, 1.f});
+
+	//Creating Pigeons
+	PigeonFeeder::Pigeon pigeon1(world, renderer, core, "Pigeon1", { (1080.f / 2.0f), (769.f / 2.f) }, 1);
+	PigeonFeeder::Pigeon pigeon2(world, renderer, core, "Pigeon2", { (1080.f / 2.0f) - 200.f, (769.f / 2.f) }, 1);
 
 	#ifdef WITH_SCE_EDITOR
 	inputmgr.BindKeyPressed(SDLK_F1, "OpenEditor");
@@ -111,7 +126,21 @@ int main(int argc, char* argv[])
 	 
 	bool isOpen = true;
 
+	//Launching threads
+	std::thread tp1(&PigeonFeeder::Pigeon::BeginBehavior, &pigeon1, std::ref(game), std::ref(isOpen));
+	std::thread tp2(&PigeonFeeder::Pigeon::BeginBehavior, &pigeon2, std::ref(game), std::ref(isOpen));
+
+	tp1.detach();
+	tp2.detach();
+
 	inputmgr.BindAction("Close", [&isOpen](bool, int, float) { isOpen = false; });
+	inputmgr.BindAction("SpawnFood", [&](bool active, int, float)
+		{
+			if (!active)
+				return;
+			Sce::Vector2i pos = core.GetMousePosition();
+			game.SpawnFood(world, renderer, core, { (float)pos.x, (float)pos.y }, 0);
+		});
 
 	while (isOpen)
 	{
@@ -141,13 +170,14 @@ int main(int argc, char* argv[])
 #ifdef WITH_SCE_EDITOR
 		imgui.NewFrame();
 #endif
-
+		//Engine systems
 		timermgr.UpdateTimers(deltaTime);
 		animationSystem.Update(deltaTime);
 		gravitySystem.ApplyGravity(deltaTime);
 		velocitySystem.ApplyVelocity(deltaTime);
 		physicSystem.Update(deltaTime);
 
+		//Game systems
 		deathSystem.DeathNote();
 
 		renderSystem.Render(deltaTime);
@@ -163,6 +193,7 @@ int main(int argc, char* argv[])
 
 		renderer.RenderPresent();
 	}
+	
 
 	return 0;
 }

@@ -9,13 +9,13 @@ namespace PigeonFeeder
 {
 	class DeathSystem
 	{
-	public :
-		DeathSystem(entt::registry* registry);
+		public :
+			DeathSystem(entt::registry* registry);
 
-		void DeathNote();
+			void DeathNote();
 
-	private:
-		entt::registry* m_registry;
+		private:
+			entt::registry* m_registry;
 	};
 }
 

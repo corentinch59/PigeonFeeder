@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <entt/entt.hpp>
+#include <SDL2/SDL_pixels.h>
 
 union SDL_Event;
 
@@ -40,7 +41,7 @@ namespace Sce
 		entt::handle CreateCamera(entt::registry& registry, const Sce::Vector2f& position, const Sce::Vector2f& scale);
 		entt::handle CreateRunner(entt::registry& registry, Sce::Renderer& renderer, const Sce::Vector2f& position, int layer);
 		entt::handle CreateModel(entt::registry& registry, Sce::Renderer& renderer, const Sce::Vector2f& position, const std::string& filepath);
-		entt::handle CreateText(entt::registry& registry, std::string text, const Sce::Vector2f& position);
+		entt::handle CreateText(entt::registry& registry, std::string text, const Sce::Vector2f& position, SDL_Color color = SDL_Color({ 0, 0, 0, 255 }));
 
 		Transform GetCameraTransform(entt::registry& registry);
 		entt::handle GetHoveredEntity(entt::registry& registry, entt::handle camera);

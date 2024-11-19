@@ -51,6 +51,7 @@ target("Pigeon Feeder")
     if is_mode("distrib") then
         add_ldflags("/subsystem:windows")
     end
+
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
 --

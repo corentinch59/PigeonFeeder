@@ -26,7 +26,7 @@ namespace Sce
 			m_texture = std::make_unique<Texture>(m_font->GenerateText(m_text, m_color));
 	}
 
-	Text::Text(Text&& text)
+	Text::Text(Text&& text) noexcept
 	{
 		m_texture = std::move(text.m_texture);
 		m_font = std::move(text.m_font);

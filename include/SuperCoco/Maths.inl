@@ -1,4 +1,5 @@
 #include <cmath>
+#include "Maths.hpp"
 
 namespace Sce
 {
@@ -20,6 +21,12 @@ namespace Sce
 	inline T Maths::ExpDecay(T a, T b, T decay, U dt)
 	{
 		return b + ( a - b) * exp(-decay * dt);
+	}
+
+	template<typename T>
+	inline T Maths::Lerp(T a, T b, T t)
+	{
+		return (1 - t) * a + t * b;
 	}
 
 	template<typename T>

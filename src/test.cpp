@@ -2,37 +2,34 @@
 #include <fmt/color.h>
 #include <AL/al.h>
 #include <AL/alc.h>
+
 #include <vector>
+#include <thread>
+#include <iostream>
+#include <array>
+#include <mutex>
+
+void func(unsigned int i)
+{
+	std::cout << "Hello from thread #" << i << "\n";
+}
 
 int main()
 {
-	const char* devicelist = alcGetString(nullptr, ALC_ALL_DEVICES_SPECIFIER);
-	std::vector<std::string> devices;
+	std::array<std::thread, 10> threads;
 
-	for (;;)
+	unsigned int counter = 0;
+	for (std::thread& t : threads)
 	{
-		std::string device = devicelist;
-		if (device.empty())
-			break;
-
-		devicelist += device.size() + 1;
-
-		devices.push_back(std::move(device));
+		t = std::thread(func, counter++);
 	}
 
-	for (const std::string device : devices)
+	std::cout << "Hello from main" << "\n";
+
+	for (std::thread& t : threads)
 	{
-		fmt::println("Device : {}", device);
+		t.join();
 	}
-
-	ALCdevice* device = alcOpenDevice(nullptr);
-
-	ALCcontext* context = alcCreateContext(device, nullptr);
-	alcMakeContextCurrent(context);
-
-	ALuint buffer;
-	alGenBuffers(1, &buffer);
-
 
 	return 0;
 }

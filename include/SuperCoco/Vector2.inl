@@ -1,4 +1,5 @@
 #include <cmath>
+#include "Vector2.hpp"
 
 namespace Sce
 {
@@ -137,13 +138,13 @@ namespace Sce
 	template<typename T>
 	T Vector2<T>::Distance(const Vector2<T>& vec1, const Vector2<T>& vec2)
 	{
-		return Length(vec2 - vec1);
+		return (vec2 - vec1).Length();
 	}
 
 	template<typename T>
 	inline T Vector2<T>::SquareDistance(const Vector2<T>& vec1, const Vector2<T>& vec2)
 	{
-		return SquareLength(vec2 - vec1);
+		return (vec2 - vec1).SquareLength();
 	}
 
 	template<typename T>

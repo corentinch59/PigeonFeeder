@@ -5,41 +5,38 @@
 #include <SuperCoco/Renderer.hpp>
 #include <SuperCoco/Sprite.hpp>
 #include <SuperCoco/Core.hpp>
+#include <mutex>
 
 namespace PigeonFeeder
 {
-	enum class EnemyType
-	{
-		Cyclop,
-		Spider,
-		EvilWizard,
-		Ghost,
-		Mimic
-	};
+	class PigeonFood;
+	class Pigeon;
 
 	class Game
 	{
-	public:
-		Game();
-		~Game();
-		Game(Game&) = delete;
-		Game(Game&&) noexcept = delete;
+		public:
+			Game();
+			~Game();
+			Game(Game&) = delete;
+			Game(Game&&) noexcept = delete;
 
-		Game& operator=(Game&) = delete;
-		Game& operator=(Game&&) noexcept = delete;
+			Game& operator=(Game&) = delete;
+			Game& operator=(Game&&) noexcept = delete;
 
-		entt::handle CreatePlayer(entt::registry& world, Sce::Renderer& renderer, Sce::Vector2f position, int layer);
-		entt::handle CreateTile(entt::registry& world, Sce::Renderer& renderer, SDL_Rect rect, Sce::Vector2f position, Sce::Vector2f origin, int layer);
-		entt::handle CreateWeapon(entt::registry& world, Sce::Renderer& renderer, SDL_Rect rect, Sce::Vector2f position, Sce::Vector2f origin, int layer);
-		entt::handle CreateEnemy(entt::registry& world, Sce::Renderer& renderer, EnemyType type, Sce::Vector2f position, int layer, Sce::Core& core);
+			void SpawnFood(entt::registry& world, Sce::Renderer& renderer, Sce::Core& core, Sce::Vector2f position, int layer);
+			void RemoveFood(const std::shared_ptr<PigeonFood>& food);
 
-		static Game& Instance();
+			const std::vector<std::shared_ptr<PigeonFood>>& GetFoodList() const;
+			std::shared_ptr<PigeonFood> FindClosestFood(const Pigeon& pigeon);
 
-	private:
-		std::shared_ptr<Sce::Sprite> BuildPlayerSprite(Sce::Renderer& renderer, int layer);
-		std::shared_ptr<Sce::Sprite> BuildTileSprite(Sce::Renderer& renderer, SDL_Rect rect, Sce::Vector2f origin, int layer);
+			static Game& Instance();
 
-		static Game* s_instance;
+		private:
+			std::vector<std::shared_ptr<PigeonFood>> m_pigeonFood;
+			std::vector<std::shared_ptr<PigeonFood>> m_staleFood;
+			std::mutex m_foodListMutex;
+
+			static Game* s_instance;
 	};
 }
 

@@ -43,25 +43,18 @@ namespace Sce
 
 		if (collisionBeginFunc)
 		{
-			cpCollisionHandler* handler = cpSpaceAddCollisionHandler(PhysicsSystem::Instance()->GetSpace().GetHandle(), static_cast<cpCollisionType>(Tag::Weapon), static_cast<cpCollisionType>(Tag::Enemy));
+			cpCollisionHandler* handler = cpSpaceAddCollisionHandler(PhysicsSystem::Instance()->GetSpace().GetHandle(), static_cast<cpCollisionType>(Tag::Player), static_cast<cpCollisionType>(Tag::Player));
 			handler->beginFunc = [](cpArbiter* arb, cpSpace* space, void* data) -> cpBool
 				{
-					auto* func = static_cast<std::function<cpBool(cpArbiter*, cpSpace*, void*)>*>(data);
-					cpBody* firstBody;
-					cpBody* secondBody;
-					cpArbiterGetBodies(arb, &firstBody, &secondBody);
+					cpShape* a, * b;
+					cpArbiterGetShapes(arb, &a, &b);
 
-					std::function<void()>* temp1 = static_cast<std::function<void()>*>(cpBodyGetUserData((firstBody)));
-					std::function<void()>& callback1 = *temp1;
-					if(callback1)
-						callback1();
+					// Vérifiez si les deux formes ont le même collisionType
+					if (cpShapeGetCollisionType(a) == cpShapeGetCollisionType(b)) {
+						return cpFalse; // Ignore la collision
+					}
 
-					std::function<void()>* temp2 = static_cast<std::function<void()>*>(cpBodyGetUserData((secondBody)));
-					std::function<void()>& callback2 = *temp2;
-					if (callback2)
-						callback2();
-
-					return (*func)(arb, space, nullptr);
+					return cpTrue; // Autorise la collision sinon
 				};
 			handler->userData = new std::function<cpBool(cpArbiter*, cpSpace*, void*)>(collisionBeginFunc);
 		}

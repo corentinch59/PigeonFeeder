@@ -30,6 +30,9 @@ namespace Sce
 		static T ExpDecay(T a, T b, T decay, U dt);
 
 		template<typename T>
+		static T Lerp(T a, T b, T dt);
+
+		template<typename T>
 		static T EaseInSine(T value);
 
 		template<typename T>

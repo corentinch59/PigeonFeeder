@@ -123,7 +123,7 @@ namespace Sce
 		return entt::handle{ registry, entity };
 	}
 
-	entt::handle Core::CreateText(entt::registry& registry, std::string text, const Sce::Vector2f& position)
+	entt::handle Core::CreateText(entt::registry& registry, std::string text, const Sce::Vector2f& position, SDL_Color color)
 	{
 		entt::entity entity = registry.create();
 
@@ -133,7 +133,7 @@ namespace Sce
 		transform.SetScale({ 1.f, 1.f });
 
 		std::shared_ptr<Font> font = ResourceManager::Instance().GetFont("assets/Designer.otf", 18);
-		auto& textcomp = registry.emplace<TextComponent>(entity, font, std::move(text), SDL_Color(0, 0, 0, 255));
+		auto& textcomp = registry.emplace<TextComponent>(entity, font, std::move(text), color);
 		std::shared_ptr<TextComponent> textptr = std::make_shared<TextComponent>(std::move(textcomp));
 		auto& gfx = registry.emplace<GraphicsComponent>(entity);
 		gfx.m_renderable = textptr;
